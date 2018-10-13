@@ -1,0 +1,48 @@
+# global settings
+interval = 1
+padding = 16
+icons = true
+
+[colors]
+healthy = '#00ff00'
+uneasy = '#ffff00'
+sick = '#ff0000'
+normal = '#dcdcdc'
+
+# each block that will appear (in order)
+[[block]]
+block = 'Volume'
+interval = 20
+update_on_signal = 'SIGUSR1'
+
+[[block]]
+block = 'Network'
+title = 'W'
+device = 'wlp4s0'
+interval = 1
+template = "{{title}}: {{bytesUp}} {{bytesDown}} of {{totalDown}} at {{ssid}} {{ipv4}}"
+
+[[block]]
+block = 'Temperature'
+
+[[block]]
+block = 'CPU'
+sick_threshold = 75 # > percentage
+
+[[block]]
+block = 'Memory'
+# displays used memory and a percentage
+sick_threshold = 75 # > percentage
+
+[[block]]
+block = 'Disk'
+disk = '/dev/sda2'
+interval = 1
+sick_threshold = 20 # < percentage
+
+[[block]]
+block = 'Battery'
+sick_threshold = 10 # < percentage
+
+[[block]]
+block = 'DateTime'

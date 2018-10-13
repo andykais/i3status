@@ -1,0 +1,7 @@
+# editor files
+.tern-port
+
+# build files
+dist
+
+node_modules
