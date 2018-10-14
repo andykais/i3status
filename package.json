@@ -1,7 +1,7 @@
 {
   "name": "i3status-rx",
   "version": "1.0.0",
-  "description": "",
+  "description": "an i3bar status command that attempts to do as little work infrequently and as much work asynchronously as possible",
   "main": "index.js",
   "bin": {
     "i3status-rx": "./bin/cli.js"
@@ -10,7 +10,11 @@
     "develop": "webpack --watch --mode=development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "i3",
+    "i3bar",
+    "i3status"
+  ],
   "author": "Andrew Kaiser",
   "license": "MIT",
   "dependencies": {
