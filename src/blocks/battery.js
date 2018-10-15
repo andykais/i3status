@@ -10,8 +10,8 @@ class Battery extends BuildingBlock {
   update = async () => {
     const { stdout } = await exec('acpi -b')
     const batteries = stdout
+      .trim()
       .split('\n')
-      .filter((_, i) => i < 2)
       .map((info, i) => {
         const [percent] = info.match(/\d+%/).map(parseInt)
         const active = Boolean(info.match(/Discharging|Charging/))
