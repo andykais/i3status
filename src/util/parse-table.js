@@ -1,4 +1,7 @@
-export default (columnKeys, parseFunction = v => v) => tableString => {
+export const parseTable = (
+  columnKeys,
+  parseFunction = v => v
+) => tableString => {
   const tableData = []
   return tableString.split('\n').map(line =>
     line

@@ -1,8 +1,7 @@
-import sourceMapSupport from 'source-map-support'
-import builtInBlocks from './blocks'
-import getStatusObservable from './status'
-import parseConfig from './config'
-sourceMapSupport.install()
+import 'source-map-support/register'
+import { blocks as builtInBlocks } from './blocks'
+import { getStatusObservable } from './status'
+import { parseConfig } from './config'
 
 export default ({ configPath, pluginPath, verbose }) => {
   console.debug = verbose ? (...args) => console.log(...args) : () => {}

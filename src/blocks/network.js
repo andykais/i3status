@@ -9,7 +9,7 @@ import { tupleToObject } from '../util/array'
 const reSsid = /ESSID:"(.*?)"/
 
 class Network extends BuildingBlock {
-  name = 'Network'
+  static block = 'Network'
 
   constructor(config, blockConfig) {
     super(config, blockConfig)

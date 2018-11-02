@@ -1,7 +1,7 @@
 import BuildingBlock from '../building-block'
 
 class DateTime extends BuildingBlock {
-  name = 'DateTime'
+  static block = 'DateTime'
 
   update = () => ({
     date: Date.now()

@@ -1,4 +1,4 @@
-export default ({ padStart, padEnd }) => {
+export const padText = ({ padStart, padEnd }) => {
   const padFunc =
     padStart && padEnd
       ? v => ` ${v} `

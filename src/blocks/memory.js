@@ -2,7 +2,7 @@ import os from 'os'
 import BuildingBlock from '../building-block'
 
 class Memory extends BuildingBlock {
-  name = 'Memory'
+  static block = 'Memory'
 
   update = () => {
     const total = os.totalmem() / 1e9

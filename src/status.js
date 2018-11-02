@@ -1,12 +1,7 @@
-import { Observable, Subject, timer, merge, of } from 'rxjs'
+import { Observable, timer, merge } from 'rxjs'
 import { flatMap, map, filter, tap, skipWhile } from 'rxjs/operators'
-import fromSignal from './util/signal-observable'
-import {
-  tupleToObject,
-  tupleToObjectOfArrays,
-  tupleToGroupedCollections,
-  groupCollections
-} from './util/array'
+import { fromSignal } from './util/signal-observable'
+import { groupCollections } from './util/array'
 import { ClassCollection } from './class-collection'
 
 const getUpdateObservables = blockInstances => {
@@ -59,7 +54,8 @@ const getSignalObservables = blockInstances => {
   )
 }
 
-export default (config, blocksMap) => {
+// main observable function
+export const getStatusObservable = (config, blocksMap) => {
   const renderIntervalObservable = timer(0, config.interval * 1000)
 
   const blockInstances = config.block.map(blockConfig => {
@@ -86,8 +82,8 @@ export default (config, blocksMap) => {
 
   const updateRenderObservable = merge(...updateObservables, renderObservable)
 
+  return merge(...updateObservables, renderObservable)
   return new Observable(destination => {
-    // start the main observable
     updateRenderObservable.subscribe(destination)
   })
 }

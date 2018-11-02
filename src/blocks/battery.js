@@ -1,7 +1,7 @@
 import BuildingBlock from '../building-block'
 import { exec } from '../util/child-process-promise'
 import * as unicodes from '../util/unicodes'
-import padText from '../util/pad-text'
+import { padText } from '../util/pad-text'
 
 const padRemaining = padText({ padStart: true })
 
@@ -10,7 +10,8 @@ const reActive = /Discharging|Charging/
 const reRemaining = /\d\d:\d\d:\d\d/
 
 class Battery extends BuildingBlock {
-  name = 'Battery'
+  static block = 'Battery'
+
   update = async () => {
     const { stdout } = await exec('acpi -b')
     const batteries = stdout

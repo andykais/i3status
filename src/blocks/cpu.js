@@ -1,12 +1,12 @@
 import os from 'os'
 import BuildingBlock from '../building-block'
 import * as unicodes from '../util/unicodes'
-import padText from '../util/pad-text'
+import { padText } from '../util/pad-text'
 
 const padCores = padText({ padStart: true })
 
 class CPU extends BuildingBlock {
-  name = 'CPU'
+  static block = 'CPU'
 
   update = () => {
     const cores = os

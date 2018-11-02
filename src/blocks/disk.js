@@ -1,7 +1,7 @@
 import BuildingBlock from '../building-block'
 import { exec } from '../util/child-process-promise'
 import { humanSizes } from '../util/human-readable'
-import parseTable from '../util/parse-table'
+import { parseTable } from '../util/parse-table'
 
 const parseDiskTable = parseTable(
   [null, 'size', 'used', 'available', 'usePercent'],
@@ -10,7 +10,7 @@ const parseDiskTable = parseTable(
 
 const reInfo = /\/dev\/sda2\s+\d+\s+\d+\s+(\d+)\s+(\d+)/
 class Disk extends BuildingBlock {
-  name = 'Disk'
+  static block = 'Disk'
 
   update = async () => {
     const { stdout } = await exec(`df ${this.config.disk} | tail -1`)

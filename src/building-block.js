@@ -1,7 +1,4 @@
-import { Subject, interval, merge } from 'rxjs'
-import { map, tap, skipWhile } from 'rxjs/operators'
 import { createStore } from 'undux'
-import fromSignal from './util/signal-observable'
 
 const validate = {
   interval: interval => {
@@ -18,6 +15,7 @@ const validate = {
  */
 
 class BuildingBlock {
+  static block = null
   // TODO make a singleton for a type of block so there is a possibility to execute once for all of them
   store = createStore({
     previousUpdate: null,
@@ -25,6 +23,8 @@ class BuildingBlock {
     renderOutput: {}
   })
   constructor(config, blockConfig) {
+    this.block = blockConfig.block
+
     this.colors = config.colors
     this.showIcons =
       blockConfig.icons === undefined ? config.icons : blockConfig.icons

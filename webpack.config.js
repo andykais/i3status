@@ -1,14 +1,7 @@
 const NodemonPlugin = require('nodemon-webpack-plugin')
 const CleanTerminalPlugin = require('clean-terminal-webpack-plugin')
 
-const devPlugins = [
-  new CleanTerminalPlugin()
-  // new NodemonPlugin({
-  // script: './bin/cli.js',
-  // args: ['./sample-config.toml'],
-  // watch: './dist'
-  // })
-]
+const devPlugins = [new CleanTerminalPlugin()]
 
 module.exports = (env, argv) => ({
   target: 'node',
@@ -31,7 +24,7 @@ module.exports = (env, argv) => ({
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: 'babel-loader'
       }
     ]
   },

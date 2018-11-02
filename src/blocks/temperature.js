@@ -3,7 +3,7 @@ import { exec } from '../util/child-process-promise'
 import * as unicodes from '../util/unicodes'
 
 class Temperature extends BuildingBlock {
-  name = 'Temperature'
+  static block = 'Temperature'
 
   update = async () => {
     const { stdout } = await exec('acpi -t')

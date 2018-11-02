@@ -2,8 +2,9 @@ import BuildingBlock from '../building-block'
 import { exec } from '../util/child-process-promise'
 
 const reInfo = /[a-z][a-z ]*\: Playback [0-9-]+ \[([0-9]+)\%\] (?:[[0-9\.-]+dB\] )?\[(on|off)\]/i
+
 class Volume extends BuildingBlock {
-  name = 'Volume'
+  static block = 'Volume'
 
   update = async prevState => {
     const { stdout } = await exec('amixer get Master')
