@@ -36,7 +36,8 @@ class CPU extends BuildingBlock {
   render = ({ avg, coresText }) => [
     {
       full_text: `CPU ${avg.toFixed(2)}%${padCores(this.icon(coresText))}`,
-      color: avg > this.config.sick_threshold ? this.colors.sick : this.colors.normal
+      color:
+        avg > this.config.sick_threshold ? this.colors.sick : this.colors.normal
     }
   ]
 }

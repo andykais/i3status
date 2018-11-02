@@ -20,6 +20,13 @@ template = "{{title}}{{bytesUp}} {{bytesDown}} of {{totalDown}} at {{ssid}} {{ip
 
 [[block]]
 block = 'Network'
+title = 'USB'
+device = 'enp0s20f0u3'
+hide_if_down = true
+template = "{{title}}{{bytesUp}} {{bytesDown}} of {{totalDown}} at {{ipv4}}"
+
+[[block]]
+block = 'Network'
 title = 'E'
 device = 'enp0s31f6'
 hide_if_down = true

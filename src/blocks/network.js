@@ -1,21 +1,12 @@
 import os from 'os'
 import Handlebars from 'handlebars'
 import BuildingBlock from '../building-block'
-import parseTable from '../util/parse-table'
 import { exec } from '../util/child-process-promise'
-import { readFile } from '../util/fs-promise'
 import { humanSizes } from '../util/human-readable'
 import * as unicodes from '../util/unicodes'
+import { tupleToObject } from '../util/array'
 
-const parseNetworkTable = parseTable(
-  [null, 'device', null, null, null, null, null, null, 'state'],
-  item => item.replace(/:$/, ':')
-)
-const reBytes = /RX:.*?[\n\r]\s*(\d+)[\s\S]+TX:.*?[\r\n]\s*(\d+)/
-const reIpv4 = /inet\s(.*?)\//
-const reIpv6 = /inet6\s(.*?)\//
-
-const reDevice = /(^|[\n\r])\d+:\s/
+const reSsid = /ESSID:"(.*?)"/
 
 class Network extends BuildingBlock {
   name = 'Network'
@@ -25,54 +16,54 @@ class Network extends BuildingBlock {
     this.template = Handlebars.compile(blockConfig.template)
   }
 
-  // TODO wire up to run once for all Networks
-  static io = async () => {
-    const [status, ssid] = await Promise.all([
-      exec(`ip -s addr`),
-      exec('iwgetid -r')
+  static update = async () => {
+    const [statuses, iwStats] = await Promise.all([
+      exec('ip -json -statistics addr'),
+      exec('iwconfig')
     ])
-    const statuses = status.stdout.split(reDevice).splice(2)
-    return { statuses, ssid }
+    const wifiDevices = iwStats.stdout
+      .split('\n\n')
+      .map(deviceStr => {
+        const components = deviceStr.split(' ')
+        return [components.shift(), components.join(' ')]
+      })
+      .reduce(tupleToObject, {})
+
+    return {
+      statuses: JSON.parse(statuses.stdout),
+      wifiDevices
+    }
   }
 
-  update = async ({
-    totalBytesDown: prevBytesDown = 0,
-    totalBytesUp: prevBytesUp = 0
-  }) =>
-    // { statuses, ssid }
-    {
-      // const status = statuses.find(s => s.startsWith(this.config.device + ' '))
-      try {
-        const [status, ssid] = await Promise.all([
-          exec(`ip -s addr show ${this.config.device}`),
-          exec('iwgetid -r')
-        ])
-        const [{ state }] = parseNetworkTable(status.stdout)
+  update = (
+    { totalBytesDown: prevBytesDown = 0, totalBytesUp: prevBytesUp = 0 },
+    { statuses, wifiDevices }
+  ) => {
+    const status = statuses.find(status => status.ifname === this.config.device)
+    if (!status) return { state: 'DOWN' }
 
-        const [IPv4] = os.networkInterfaces()[this.config.device] || [
-          { address: '' }
-        ]
+    const wifiStats = wifiDevices[this.config.device]
 
-        const [_2, rBytes, tBytes] = status.stdout.match(reBytes)
+    const state = status.operstate
+    const [IPv4] = os.networkInterfaces()[this.config.device] || [
+      { address: '' }
+    ]
+    const { rx, tx } = status.stats64
+    const totalBytesDown = rx.bytes
+    const totalBytesUp = tx.bytes
 
-        const totalBytesDown = parseInt(rBytes)
-        const totalBytesUp = parseInt(tBytes)
+    const [_, ssid] = wifiStats ? wifiStats.match(reSsid) || [] : []
 
-        return {
-          state,
-          ssid: ssid.stdout.trim(),
-          ipv4: IPv4.address,
-          bytesUpPerInterval: totalBytesUp - prevBytesUp,
-          bytesDownPerInterval: totalBytesDown - prevBytesDown,
-          totalBytesDown,
-          totalBytesUp
-        }
-      } catch (e) {
-        return {
-          state: 'DOWN'
-        }
-      }
+    return {
+      state,
+      ssid,
+      ipv4: IPv4.address,
+      bytesUpPerInterval: totalBytesUp - prevBytesUp,
+      bytesDownPerInterval: totalBytesDown - prevBytesDown,
+      totalBytesDown,
+      totalBytesUp
     }
+  }
   render = ({
     state,
     ssid,

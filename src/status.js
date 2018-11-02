@@ -1,37 +1,77 @@
 import { Observable, Subject, timer, merge, of } from 'rxjs'
 import { flatMap, map, filter, tap, skipWhile } from 'rxjs/operators'
 import fromSignal from './util/signal-observable'
+import {
+  tupleToObject,
+  tupleToObjectOfArrays,
+  tupleToGroupedCollections,
+  groupCollections
+} from './util/array'
+import { ClassCollection } from './class-collection'
 
-export default (blocks, config) => {
-  const renderIntervalObservable = timer(0, 1000)
-  const renderIntervalSubject = new Subject()
+const getUpdateObservables = blockInstances => {
+  /**
+   * Instance = class BuildingBlock {}
+   * Category = Instance[]
+   * IntervalCategoryInstances = { [number: interval]: Category[] }
+   */
+  const intervalCategoryInstances = blockInstances
+    .map(instance => new ClassCollection(instance.interval, [instance]))
+    .reduce(groupCollections, [])
+    .map(intervalCollection =>
+      intervalCollection
+        .map(instance => new ClassCollection(instance.constructor, [instance]))
+        .reduce(
+          groupCollections,
+          new ClassCollection(intervalCollection.static)
+        )
+    )
 
-  const blockInstances = config.block.map(
-    b => new (blocks.find(blockClass => blockClass.name === b.block))(config, b)
-  )
+  const baseUpdateObservable = timer(0, 1000)
 
-  const updateObservables = blockInstances.map(instance =>
-    renderIntervalSubject.pipe(
-      filter((_, i) => i % instance.interval === 0),
-      tap(instance.callUpdate),
+  return intervalCategoryInstances.map(interval =>
+    baseUpdateObservable.pipe(
+      filter((_, i) => i % interval.static === 0),
+      flatMap(() => interval),
+      tap(async category => {
+        const staticUpdateVal = await category.static.update()
+        for (let i = 0; i < category.length; i++) {
+          category[i].callUpdate(staticUpdateVal)
+        }
+      }),
       skipWhile(() => true)
     )
   )
+}
 
-  const signalObservables = ['SIGUSR1', 'SIGUSR2'].map(signal =>
-    fromSignal(signal).pipe(
+const getSignalObservables = blockInstances => {
+  const signalCollections = blockInstances
+    .filter(instance => instance.update_on_signal)
+    .map(instance => new ClassCollection(instance.update_on_signal, [instance]))
+    .reduce(groupCollections, [])
+
+  return signalCollections.map(collection =>
+    fromSignal(collection.static).pipe(
       flatMap(() =>
-        Promise.all(
-          blockInstances
-            .filter(instance => instance.update_on_signal)
-            .map(instance => instance.callUpdate())
-        )
+        Promise.all(collection.map(instance => instance.callUpdate()))
       )
     )
   )
+}
+
+export default (config, blocksMap) => {
+  const renderIntervalObservable = timer(0, config.interval * 1000)
+
+  const blockInstances = config.block.map(blockConfig => {
+    const blockClass = blocksMap[blockConfig.block]
+    return new blockClass(config, blockConfig)
+  })
+  const updateObservables = getUpdateObservables(blockInstances)
+
+  const signalObservables = getSignalObservables(blockInstances)
 
   const renderObservable = merge(
-    renderIntervalSubject,
+    renderIntervalObservable,
     ...signalObservables
   ).pipe(
     map(() =>
@@ -47,10 +87,6 @@ export default (blocks, config) => {
   const updateRenderObservable = merge(...updateObservables, renderObservable)
 
   return new Observable(destination => {
-    // subscribe to subjects for blocks
-    // fromSignal('SIGUSR1').subscribe(renderTriggers.SIGUSR1)
-    // fromSignal('SIGUSR2').subscribe(renderTriggers.SIGUSR2)
-    renderIntervalObservable.subscribe(renderIntervalSubject)
     // start the main observable
     updateRenderObservable.subscribe(destination)
   })

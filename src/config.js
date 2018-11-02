@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import toml from 'toml'
+import { tupleToObject } from './util/array'
 
 const mergeBlockConfigs = (defaultConfig, userConfig) => {
   if (!userConfig) return defaultConfig.block
@@ -26,9 +27,11 @@ export default configFile => {
     resolve(__dirname, '../default-config.toml')
   )
 
+  const mergedGlobalConfigs = { ...defaultConfig, ...userConfig }
+
   return {
-    ...defaultConfig,
-    ...userConfig,
+    ...mergedGlobalConfigs,
+    interval: mergedGlobalConfigs.interval,
     block: mergeBlockConfigs(defaultConfig, userConfig)
   }
 }

@@ -1,5 +1,5 @@
 import sourceMapSupport from 'source-map-support'
-import blockClasses from './blocks'
+import builtInBlocks from './blocks'
 import getStatusObservable from './status'
 import parseConfig from './config'
 sourceMapSupport.install()
@@ -11,10 +11,11 @@ export default ({ configPath, pluginPath, verbose }) => {
   const config = parseConfig(configPath)
 
   // const pluginBlocks = require('pluginPath')
+  const pluginBlocks = []
 
-  const blocks = config.block.map(b => blockClasses[b.block])
+  const blocks = { ...builtInBlocks, ...pluginBlocks }
 
-  const statusObservable = getStatusObservable(blocks, config)
+  const statusObservable = getStatusObservable(config, blocks)
 
   console.status(JSON.stringify({ version: 1 }) + '[\n[]')
   statusObservable.subscribe(console.status)
