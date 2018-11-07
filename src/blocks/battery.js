@@ -29,19 +29,16 @@ class Battery extends BuildingBlock {
     return batteries
   }
   render = batteries =>
-    batteries.map(({ percent, active, remaining, status }, i) => {
-      // console.debug({ remaining })
-      return {
-        name: `bat-${i}`,
-        full_text: `${this.icon(
-          active ? unicodes.lightningBolt.padEnd(2) : ''
-        )}${status} ${percent}%${padRemaining(remaining)}`,
-        color:
-          percent < this.config.sick_threshold
-            ? this.colors.sick
-            : this.colors.normal
-      }
-    })
+    batteries.map(({ percent, active, remaining, status }, i) => ({
+      name: `bat-${i}`,
+      full_text: `${this.icon(
+        active ? unicodes.lightningBolt.padEnd(2) : ''
+      )}${status} ${percent}%${padRemaining(remaining)}`,
+      color:
+        percent < this.config.sick_threshold && status !== 'CHR'
+          ? this.colors.sick
+          : this.colors.normal
+    }))
 }
 
 export default Battery
