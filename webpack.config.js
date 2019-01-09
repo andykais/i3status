@@ -1,4 +1,3 @@
-const NodemonPlugin = require('nodemon-webpack-plugin')
 const CleanTerminalPlugin = require('clean-terminal-webpack-plugin')
 
 const devPlugins = [new CleanTerminalPlugin()]
