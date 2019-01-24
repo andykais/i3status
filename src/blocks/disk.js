@@ -23,7 +23,7 @@ class Disk extends BuildingBlock {
   render = ({ available, usePercent }) => [
     {
       name: `disk-${this.config.disk}`,
-      full_text: `DISK: ${humanSizes(available * 1e3, { sigfig: 1 })}`,
+      full_text: `DISK: ${humanSizes(available * 1024, { sigfig: 1 })}`,
       color:
         100 - usePercent < this.config.sick_threshold
           ? this.colors.sick
