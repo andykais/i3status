@@ -7,7 +7,7 @@
     "i3status-rx": "./bin/cli.js"
   },
   "scripts": {
-    "develop": "webpack --watch --mode=development",
+    "build:watch": "webpack --watch --mode=development",
     "build": "webpack --mode=production",
     "lint": "git ls-files '*.js' '*.json' | xargs prettier -l",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,7 +21,7 @@
   "author": "Andrew Kaiser",
   "license": "MIT",
   "dependencies": {
-    "handlebars": "^4.0.12",
+    "handlebars": "^4.1.0",
     "minimist": "^1.2.0",
     "react": "^16.6.0",
     "rxjs": "^6.3.3",

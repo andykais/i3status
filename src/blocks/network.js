@@ -76,6 +76,7 @@ class Network extends BuildingBlock {
 
     if (state === 'UP' || state === 'UNKNOWN') {
       const interval = this.interval === 1 ? 's' : `${this.interval}s`
+      console.debug(humanSizes(bytesUpPerInterval))
       const bytesUp = `${humanSizes(bytesUpPerInterval)}${interval}`
       const bytesDown = `${humanSizes(bytesDownPerInterval)}${interval}`
       const totalDown = humanSizes(totalBytesDown)
