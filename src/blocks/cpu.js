@@ -6,39 +6,65 @@ import { padText } from '../util/pad-text'
 const padCores = padText({ padStart: true })
 
 class CPU extends BuildingBlock {
-  static block = 'CPU'
+    static block = 'CPU'
 
-  update = () => {
-    const cores = os
-      .cpus()
-      .map(
-        ({ times: { user, nice, idle } }) =>
-          ((user + nice) * 100) / (user + nice + idle)
-      )
-    const avg = cores.reduce((acc, c) => c + acc, 0) / cores.length
+    update = ({ oldCores = [] }) => {
+        let average = 0
+        const cores = os.cpus()
+        const coresText = cores.map((core, i) => {
+            const prevCore = oldCores[i] || {
+                times: {
+                    user: 0,
+                    nice: 0,
+                    irq: 0,
+                    sys: 0,
+                    idle: 0
+                }
+            }
+            const coreChanged= Object.keys(core.times).reduce(
+                (acc, key) => ({
+                    ...acc,
+                    [key]: core.times[key] - prevCore.times[key]
+                }),
+                {} 
+            )
+            const { user, nice, idle, irq, sys } = coreChanged
+            const coreAverage = (user + nice + irq + sys) / (user + nice + idle + irq + sys) * 100
+            
+            
+            // const active =
+            //       core.times.user +
+            //       core.times.nice +
+            //       core.times.irq +
+            //       core.times.sys -
+            //       prevCore.times.user +
+            //       prevCore.times.nice +
+            //       prevCore.times.irq +
+            //       prevCore.times.sys
+            // const idle = core.times.idle - prevCore.times.idle
+            // const coreAverage = ((active) / (active + idle)) * 100
+            average += coreAverage
+            // console.log({ average })
+            const unicode = unicodes.capacity(coreAverage)
+            return unicode
+        })
 
-    const maxCore = Math.max(...cores)
-    // relative distance
-    // const coresText = avg > DANGER_THRESHOLDS.cpu && normalize(cores).map(unicodes.capacity).join(' ')
-    // out of 100 distance
-    const coresText =
-      cores.find(c => unicodes.capacity(c) !== unicodes.capacity(0)) &&
-      cores.map(unicodes.capacity).join(' ')
-
-    return { avg, coresText }
-    // return {
-    // name: 'cpu',
-    // full_text: `CPU ${avg.toFixed(2)}%${optional(coresText)}`,
-    // color: avg > DANGER_THRESHOLDS.cpu ? colors.sick : colors.normal
-    // }
-  }
-
-  render = ({ avg, coresText }) => [
-    {
-      full_text: `CPU ${avg.toFixed(2)}%${padCores(this.icon(coresText))}`,
-      color:
-        avg > this.config.sick_threshold ? this.colors.sick : this.colors.normal
+        return { average: average / coresText.length, coresText: coresText.join(' '), oldCores: cores }
+        // return {
+        // name: 'cpu',
+        // full_text: `CPU ${average.toFixed(2)}%${optional(coresText)}`,
+        // color: average > DANGER_THRESHOLDS.cpu ? colors.sick : colors.normal
+        // }
     }
-  ]
+
+    render = ({ average, coresText }) => [
+        {
+            full_text: `CPU ${average.toFixed(2)}%${padCores(this.icon(coresText))}`,
+            color:
+            average > this.config.sick_threshold
+                ? this.colors.sick
+                : this.colors.normal
+        }
+    ]
 }
 export default CPU
