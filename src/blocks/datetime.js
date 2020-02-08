@@ -1,4 +1,4 @@
-import BuildingBlock from '../building-block'
+import BuildingBlock from '../building-block.js'
 
 class DateTime extends BuildingBlock {
   static block = 'DateTime'
@@ -25,4 +25,4 @@ class DateTime extends BuildingBlock {
   ]
 }
 
-export default DateTime
+export { DateTime }

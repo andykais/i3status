@@ -6,9 +6,12 @@
   "bin": {
     "i3status-rx": "./bin/cli.js"
   },
+  "type": "module",
+  "engines": {
+    "node": ">=8.0"
+  },
   "scripts": {
-    "build:watch": "webpack --watch --mode=development",
-    "build": "webpack --mode=production",
+    "develop": "nodemon bin/cli.js --debug",
     "lint": "git ls-files '*.js' '*.json' | xargs prettier -l",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,20 +26,11 @@
   "dependencies": {
     "handlebars": "^4.1.2",
     "minimist": "^1.2.0",
-    "react": "^16.6.0",
     "rxjs": "^6.3.3",
-    "toml": "^2.3.3",
-    "undux": "^5.0.0-beta.17"
+    "toml": "^2.3.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
-    "babel-loader": "^8.0.4",
-    "clean-terminal-webpack-plugin": "^1.1.0",
-    "prettier": "^1.14.3",
-    "source-map-support": "^0.5.9",
-    "webpack": "^4.23.1",
-    "webpack-cli": "^3.1.2"
+    "nodemon": "^2.0.2",
+    "prettier": "^1.14.3"
   }
 }

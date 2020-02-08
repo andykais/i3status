@@ -1,7 +1,7 @@
-import BuildingBlock from '../building-block'
-import { exec } from '../util/child-process-promise'
-import * as unicodes from '../util/unicodes'
-import { padText } from '../util/pad-text'
+import BuildingBlock from '../building-block.js'
+import { exec } from '../util/child-process-promise.js'
+import * as unicodes from '../util/unicodes.js'
+import { padText } from '../util/pad-text.js'
 
 const padRemaining = padText({ padStart: true })
 
@@ -41,4 +41,4 @@ class Battery extends BuildingBlock {
     }))
 }
 
-export default Battery
+export { Battery }

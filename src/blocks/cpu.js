@@ -1,7 +1,7 @@
 import os from 'os'
-import BuildingBlock from '../building-block'
-import * as unicodes from '../util/unicodes'
-import { padText } from '../util/pad-text'
+import BuildingBlock from '../building-block.js'
+import * as unicodes from '../util/unicodes.js'
+import { padText } from '../util/pad-text.js'
 
 const padCores = padText({ padStart: true })
 
@@ -67,4 +67,4 @@ class CPU extends BuildingBlock {
         }
     ]
 }
-export default CPU
+export { CPU }

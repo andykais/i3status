@@ -1,7 +1,7 @@
-import BuildingBlock from '../building-block'
-import { exec } from '../util/child-process-promise'
-import { humanSizes } from '../util/human-readable'
-import { parseTable } from '../util/parse-table'
+import BuildingBlock from '../building-block.js'
+import { exec } from '../util/child-process-promise.js'
+import { humanSizes } from '../util/human-readable.js'
+import { parseTable } from '../util/parse-table.js'
 
 const parseDiskTable = parseTable(
   [null, 'size', 'used', 'available', 'usePercent'],
@@ -32,4 +32,4 @@ class Disk extends BuildingBlock {
   ]
 }
 
-export default Disk
+export { Disk }

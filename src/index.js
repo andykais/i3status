@@ -1,11 +1,11 @@
-import 'source-map-support/register'
-import { blocks as builtInBlocks } from './blocks'
-import { getStatusObservable } from './status'
-import { parseConfig } from './config'
+// import { blocks as builtInBlocks } from './blocks/index.js'
+import * as builtInBlocks from './blocks/index.js'
+import { getStatusObservable } from './status.js'
+import { parseConfig } from './config.js'
 
-export default ({ configPath, pluginPath, verbose }) => {
-  console.debug = verbose ? (...args) => console.log(...args) : () => {}
-  console.status = !verbose ? (...args) => console.log(...args) : () => {}
+export default ({ configPath, pluginPath, debug }) => {
+  console.debug = debug ? (...args) => console.log(...args) : () => {}
+  console.status = !debug ? (...args) => console.log(...args) : () => {}
 
   const config = parseConfig(configPath)
 

@@ -1,6 +1,10 @@
-import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+import * as path from 'path'
 import { readFileSync } from 'fs'
-import * as toml from 'toml'
+import toml from 'toml'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const mergeBlockConfigs = (defaultConfig, userConfig) => {
   if (!userConfig) return defaultConfig.block
@@ -18,11 +22,9 @@ const readConfig = tomlFile => {
 }
 
 export const parseConfig = configFile => {
-  const userConfig = configFile
-    ? readConfig(resolve(process.cwd(), configFile))
-    : null
+  const userConfig = configFile ? readConfig(path.resolve(process.cwd(), configFile)) : null
 
-  const defaultConfig = readConfig(resolve(__dirname, '../default-config.toml'))
+  const defaultConfig = readConfig(path.resolve(__dirname, '../default-config.toml'))
 
   const mergedGlobalConfigs = { ...defaultConfig, ...userConfig }
 

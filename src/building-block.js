@@ -1,4 +1,4 @@
-import { createStore } from 'undux'
+const createStore = {}
 
 const validate = {
   interval: interval => {
@@ -17,12 +17,13 @@ const validate = {
 class BuildingBlock {
   static block = null
   // TODO make a singleton for a type of block so there is a possibility to execute once for all of them
-  store = createStore({
-    previousUpdate: null,
-    currentUpdate: {},
-    renderOutput: {}
-  })
+  store = new Map()
+
   constructor(config, blockConfig) {
+    this.store.set('previousUpdate', null)
+    this.store.set('currentUpdate', {})
+    this.store.set('renderOutput', {})
+
     this.block = blockConfig.block
 
     this.colors = config.colors
@@ -47,13 +48,13 @@ class BuildingBlock {
     const previousUpdate = this.store.get('currentUpdate')
     try {
       const currentUpdate = await this.update(previousUpdate, staticUpdateVal)
-      this.store.set('previousUpdate')(previousUpdate)
-      this.store.set('currentUpdate')(currentUpdate)
+      this.store.set('previousUpdate', previousUpdate)
+      this.store.set('currentUpdate', currentUpdate)
       // const end = process.hrtime(start)
       // console.debug(this.name.padEnd(8), (end[0] + end[1] / 1e9).toFixed(3), 'seconds')
     } catch (e) {
-      this.store.set('previousUpdate')(previousUpdate)
-      this.store.set('currentUpdate')({ ERROR: e })
+      this.store.set('previousUpdate', previousUpdate)
+      this.store.set('currentUpdate', { ERROR: e })
     }
   }
   callRender = () => {
@@ -75,7 +76,7 @@ class BuildingBlock {
       return []
     } else if (previousUpdate !== currentUpdate) {
       const renderOutput = this.render(currentUpdate)
-      this.store.set('renderOutput')(renderOutput)
+      this.store.set('renderOutput', renderOutput)
       return renderOutput
     } else {
       return this.store.get('renderOutput')

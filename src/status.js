@@ -1,8 +1,10 @@
-import { Observable, timer, merge } from 'rxjs'
-import { flatMap, map, filter, tap, skipWhile } from 'rxjs/operators'
-import { fromSignal } from './util/signal-observable'
-import { groupCollections } from './util/array'
-import { ClassCollection } from './class-collection'
+// import { Observable, timer, merge } from 'rxjs'
+import rxjs from 'rxjs'
+// import { flatMap, map, filter, tap, skipWhile } from 'rxjs/operators/index.js'
+import ops from 'rxjs/operators/index.js'
+import { fromSignal } from './util/signal-observable.js'
+import { groupCollections } from './util/array.js'
+import { ClassCollection } from './class-collection.js'
 
 const getUpdateObservables = blockInstances => {
   /**
@@ -22,19 +24,19 @@ const getUpdateObservables = blockInstances => {
         )
     )
 
-  const baseUpdateObservable = timer(0, 1000)
+  const baseUpdateObservable = rxjs.timer(0, 1000)
 
   return intervalCategoryInstances.map(interval =>
     baseUpdateObservable.pipe(
-      filter((_, i) => i % interval.static === 0),
-      flatMap(() => interval),
-      tap(async category => {
+      ops.filter((_, i) => i % interval.static === 0),
+      ops.flatMap(() => interval),
+      ops.tap(async category => {
         const staticUpdateVal = await category.static.update()
         for (let i = 0; i < category.length; i++) {
           category[i].callUpdate(staticUpdateVal)
         }
       }),
-      skipWhile(() => true)
+      ops.skipWhile(() => true)
     )
   )
 }
@@ -47,7 +49,7 @@ const getSignalObservables = blockInstances => {
 
   return signalCollections.map(collection =>
     fromSignal(collection.static).pipe(
-      flatMap(() =>
+      ops.flatMap(() =>
         Promise.all(collection.map(instance => instance.callUpdate()))
       )
     )
@@ -56,7 +58,7 @@ const getSignalObservables = blockInstances => {
 
 // main observable function
 export const getStatusObservable = (config, blocksMap) => {
-  const renderIntervalObservable = timer(0, config.interval * 1000)
+  const renderIntervalObservable = rxjs.timer(0, config.interval * 1000)
 
   const blockInstances = config.block.map(blockConfig => {
     const blockClass = blocksMap[blockConfig.block]
@@ -66,24 +68,24 @@ export const getStatusObservable = (config, blocksMap) => {
 
   const signalObservables = getSignalObservables(blockInstances)
 
-  const renderObservable = merge(
+  const renderObservable = rxjs.merge(
     renderIntervalObservable,
     ...signalObservables
   ).pipe(
-    map(() =>
+    ops.map(() =>
       blockInstances.reduce((acc, instance) => {
         const rendered = instance.callRender()
         return acc.concat(rendered)
       }, [])
     ),
-    map(JSON.stringify),
-    map(jsonStr => ',' + jsonStr)
+    ops.map(JSON.stringify),
+    ops.map(jsonStr => ',' + jsonStr)
   )
 
-  const updateRenderObservable = merge(...updateObservables, renderObservable)
+  const updateRenderObservable = rxjs.merge(...updateObservables, renderObservable)
 
-  return merge(...updateObservables, renderObservable)
-  return new Observable(destination => {
+  return rxjs.merge(...updateObservables, renderObservable)
+  return new rxjs.Observable(destination => {
     updateRenderObservable.subscribe(destination)
   })
 }

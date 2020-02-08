@@ -1,10 +1,10 @@
 import os from 'os'
 import Handlebars from 'handlebars'
-import BuildingBlock from '../building-block'
-import { exec } from '../util/child-process-promise'
-import { humanSizes } from '../util/human-readable'
-import * as unicodes from '../util/unicodes'
-import { tupleToObject } from '../util/array'
+import BuildingBlock from '../building-block.js'
+import { exec } from '../util/child-process-promise.js'
+import { humanSizes } from '../util/human-readable.js'
+import * as unicodes from '../util/unicodes.js'
+import { tupleToObject } from '../util/array.js'
 
 const reSsid = /ESSID:"(.*?)"/
 
@@ -76,7 +76,7 @@ class Network extends BuildingBlock {
 
     if (state === 'UP' || state === 'UNKNOWN') {
       const interval = this.interval === 1 ? 's' : `${this.interval}s`
-      console.debug(humanSizes(bytesUpPerInterval))
+      // console.debug(humanSizes(bytesUpPerInterval))
       const bytesUp = `${humanSizes(bytesUpPerInterval)}${interval}`
       const bytesDown = `${humanSizes(bytesDownPerInterval)}${interval}`
       const totalDown = humanSizes(totalBytesDown)
@@ -116,4 +116,4 @@ class Network extends BuildingBlock {
     }
   }
 }
-export default Network
+export { Network }

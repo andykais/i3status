@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs'
+import rxjs from 'rxjs'
 
 export const fromSignal = signal =>
-  new Observable(destination => {
+  new rxjs.Observable(destination => {
     process.on(signal, () => destination.next())
   })

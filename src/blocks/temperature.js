@@ -1,6 +1,6 @@
-import BuildingBlock from '../building-block'
-import { exec } from '../util/child-process-promise'
-import * as unicodes from '../util/unicodes'
+import BuildingBlock from '../building-block.js'
+import { exec } from '../util/child-process-promise.js'
+import * as unicodes from '../util/unicodes.js'
 
 class Temperature extends BuildingBlock {
   static block = 'Temperature'
@@ -17,4 +17,4 @@ class Temperature extends BuildingBlock {
     }
   ]
 }
-export default Temperature
+export { Temperature }

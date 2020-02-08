@@ -1,7 +1,9 @@
 const units = ['B', 'K', 'M', 'G', 'T', 'P']
 
-export const humanSizes = (bytes, { sigfig = 3 } = {}) => {
-  let i = 0
+export const humanSizes = (bytes, { sigfig = 3, givenUnit = 'B' } = {}) => {
+  let i = units.indexOf(givenUnit)
+  if (i === -1) throw new Error(`I cant use the given unit of ${givenUnit}`)
+
   while (bytes > 1000 && i < units.length) {
     bytes /= 1024
     i++
