@@ -1,6 +1,6 @@
 {
   "name": "i3status-rx",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "an i3bar status command that attempts to do as little work infrequently and as much work asynchronously as possible",
   "main": "dist/main.js",
   "bin": {
